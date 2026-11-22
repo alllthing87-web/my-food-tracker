@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10251f">
+<meta name="description" content="প্রতিদিনের দুপুর ও রাতের মিলের হিসাব রাখুন।">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<title>My Food Tracker</title>
+<style>
+:root{--bg:#f2f7f4;--card:#fff;--ink:#173128;--muted:#6e8178;--green:#167653;--line:#e2ebe5;--soft:#e9f5ee;--red:#b13d35}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{background:#10251f;color:#fff;padding:25px 18px 28px;border-radius:0 0 26px 26px}
+.wrap{max-width:650px;margin:auto;padding:0 15px}h1{font-size:24px;margin:0 0 5px}header p{margin:0;color:#c6d8d0;font-size:13px}
+main{padding:16px 0 35px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:13px;box-shadow:0 3px 12px #163d2b08}
+h2{font-size:16px;margin:0 0 12px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.muted{color:var(--muted);font-size:12px}.num{font-size:25px;font-weight:800;margin-top:4px}.green{color:var(--green)}
+label{display:block;color:var(--muted);font-size:13px;font-weight:650;margin:8px 0 6px}
+input{width:100%;border:1px solid #d5e1da;border-radius:12px;padding:12px;font:inherit;background:white;color:var(--ink)}
+.meal{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px}.mealhead{font-weight:700;margin-bottom:10px}
+.actions{display:flex;gap:9px}.pick{flex:1;border:1px solid #dce7e1;background:#f4f7f5;color:var(--ink);padding:13px 8px;border-radius:12px;font-weight:700}
+.pick.yes{background:#e4f5eb;border-color:#9ed3b5;color:#126342}.pick.no{background:#fff0ef;border-color:#efb7b2;color:#a3312c}
+.status{font-size:12px;color:var(--green);margin-top:11px;min-height:18px}
+.progress{height:11px;background:#e7eee9;border-radius:99px;overflow:hidden;margin:9px 0}
+.bar{height:100%;background:#167653;width:0%;border-radius:99px;transition:width .2s}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.big{font-size:24px;font-weight:800}
+button{cursor:pointer;font:inherit}.smallbtn{border:0;background:var(--soft);color:var(--green);padding:9px 11px;border-radius:10px;font-size:12px;font-weight:700}
+.record{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:center}
+.record:first-of-type{border-top:0}.record small{display:block;color:var(--muted);line-height:1.7;margin-top:3px}
+.delete{background:#fff0ef;color:var(--red);border:0;border-radius:9px;padding:7px 9px;font-size:12px}
+.empty{text-align:center;padding:20px 5px;color:var(--muted);font-size:14px}
+footer{font-size:11px;color:var(--muted);line-height:1.5;padding:0 3px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🍽️ My Food Tracker</h1><p>প্রতিদিনের দুপুর ও রাতের মিল সহজে আপডেট করো</p></div></header>
+<main class="wrap">
+ <section class="stats">
+  <div class="stat"><div class="muted">এই মাসে খেয়েছো</div><div class="num green" id="eaten">0</div><div class="muted">মিল</div></div>
+  <div class="stat"><div class="muted">৬০টির মধ্যে বাকি</div><div class="num" id="left">60</div><div class="muted">মিল</div></div>
+ </section>
+ <section class="panel">
+  <div class="row"><h2>আজকের মিল আপডেট</h2><span class="muted" id="todayLabel"></span></div>
+  <label for="date">তারিখ বেছে নাও</label><input type="date" id="date">
+  <div class="meal"><div class="mealhead">☀️ দুপুরের মিল</div><div class="actions">
+   <button class="pick" id="lunchYes">✔️ খেয়েছি</button><button class="pick" id="lunchNo">✖️ খাইনি</button>
+  </div></div>
+  <div class="meal"><div class="mealhead">🌙 রাতের মিল</div><div class="actions">
+   <button class="pick" id="dinnerYes">✔️ খেয়েছি</button><button class="pick" id="dinnerNo">✖️ খাইনি</button>
+  </div></div>
+  <div class="status" id="status">একটি অপশন চাপলেই অটোমেটিক Save হবে।</div>
+ </section>
+ <section class="panel">
+  <div class="row"><h2 style="margin:0">মাসের অগ্রগতি</h2><span class="muted" id="percent">0%</span></div>
+  <div class="row"><div class="big green" id="progressCount">0 / 60</div><div class="muted" id="daysLogged">0 দিনের রেকর্ড</div></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="muted" id="summary">দুপুর ০ দিন · রাত ০ দিন</div>
+ </section>
+ <section class="panel">
+  <div class="row"><h2 style="margin:0">আগের দিনের হিসাব</h2><button class="smallbtn" id="csv">CSV ডাউনলোড</button></div>
+  <label for="month">মাস বেছে নাও</label><input type="month" id="month">
+  <div id="records"></div>
+ </section>
+ <footer>ডেটা এই ফোনের এই Browser-এ অটোমেটিক সেভ হয়। Browser data মুছে ফেললে রেকর্ড হারাতে পারে—মাঝে মাঝে CSV ডাউনলোড করে রাখো। অন্য ফোনে Sync হয় না।</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id),KEY='mft_app_records_v3';
+let data={};try{data=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){data={}}
+const iso=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+const today=iso(new Date()),currentMonth=today.slice(0,7);$('date').value=today;$('month').value=currentMonth;
+$('todayLabel').textContent=new Date().toLocaleDateString('bn-IN',{day:'numeric',month:'short'});
+function monthRecords(m){return Object.keys(data).filter(d=>d.startsWith(m)).sort().map(d=>({date:d,...data[d]}))}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));$('status').textContent='✓ অটোমেটিক Save হয়েছে';render()}
+function setMeal(meal,val){const d=$('date').value;if(!d)return;if(!data[d])data[d]={lunch:null,dinner:null};data[d][meal]=val;save();paintButtons()}
+function paintButtons(){const e=data[$('date').value]||{lunch:null,dinner:null};for(const meal of ['lunch','dinner']){$(meal+'Yes').className='pick'+(e[meal]===true?' yes':'');$(meal+'No').className='pick'+(e[meal]===false?' no':'')}}
+$('lunchYes').onclick=()=>setMeal('lunch',true);$('lunchNo').onclick=()=>setMeal('lunch',false);$('dinnerYes').onclick=()=>setMeal('dinner',true);$('dinnerNo').onclick=()=>setMeal('dinner',false);
+$('date').onchange=()=>{paintButtons();$('status').textContent='নির্বাচিত দিনের রেকর্ড দেখানো হচ্ছে।'};$('month').onchange=render;
+function render(){const m=$('month').value||currentMonth,list=monthRecords(m),lunch=list.filter(x=>x.lunch===true).length,dinner=list.filter(x=>x.dinner===true).length,eaten=lunch+dinner,missed=list.reduce((n,x)=>n+(x.lunch===false?1:0)+(x.dinner===false?1:0),0),pct=Math.min(100,eaten/60*100);
+$('eaten').textContent=eaten;$('left').textContent=Math.max(0,60-eaten);$('progressCount').textContent=eaten+' / 60';$('percent').textContent=Math.round(pct)+'%';$('bar').style.width=pct+'%';$('daysLogged').textContent=list.length+' দিনের রেকর্ড';$('summary').textContent=`দুপুরে ${lunch} দিন · রাতে ${dinner} দিন · না খাওয়া ${missed} মিল`;
+const root=$('records');root.innerHTML='';const dates=Object.keys(data).filter(d=>d.startsWith(m)).sort().reverse();if(!dates.length){root.innerHTML='<div class="empty">এই মাসে এখনও কোনো রেকর্ড নেই।</div>';return}
+for(const d of dates){const e=data[d],el=document.createElement('div');el.className='record';const left=document.createElement('div'),right=document.createElement('div');left.innerHTML=`<strong>${new Date(d+'T00:00:00').toLocaleDateString('bn-IN',{day:'numeric',month:'short',year:'numeric'})}</strong><small>দুপুর: ${e.lunch===true?'✔️ খেয়েছো':e.lunch===false?'✖️ খাওনি':'— আপডেট হয়নি'}<br>রাত: ${e.dinner===true?'✔️ খেয়েছো':e.dinner===false?'✖️ খাওনি':'— আপডেট হয়নি'}</small>`;
+const count=(e.lunch===true?1:0)+(e.dinner===true?1:0),amount=document.createElement('strong');amount.className='green';amount.textContent=count+'/2';const del=document.createElement('button');del.className='delete';del.textContent='মুছুন';del.onclick=()=>{if(confirm('এই দিনের রেকর্ড মুছবে?')){delete data[d];localStorage.setItem(KEY,JSON.stringify(data));render();paintButtons()}};right.append(amount,document.createElement('br'),del);el.append(left,right);root.append(el)}}
+$('csv').onclick=()=>{const rows=[['Date','Lunch','Dinner','Meals eaten'],...Object.keys(data).sort().map(d=>[d,data[d].lunch===true?'Yes':data[d].lunch===false?'No':'Not updated',data[d].dinner===true?'Yes':data[d].dinner===false?'No':'Not updated',(data[d].lunch===true?1:0)+(data[d].dinner===true?1:0)])];const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='my-food-tracker.csv';a.click();URL.revokeObjectURL(url)};
+paintButtons();render();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body></html>
